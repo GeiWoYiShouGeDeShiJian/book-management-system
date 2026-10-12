@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}统计分析 - 图书管理系统{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">统计分析</h2>
+
+<!-- 概览统计 -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ total_books }}</h3>
+                <small class="text-muted">图书总数</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ total_categories }}</h3>
+                <small class="text-muted">分类数量</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">{{ total_authors }}</h3>
+                <small class="text-muted">作者数量</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">{{ total_borrows }}</h3>
+                <small class="text-muted">借阅总数</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-secondary">{{ active_borrows }}</h3>
+                <small class="text-muted">当前借出</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-danger">{{ overdue_borrows }}</h3>
+                <small class="text-muted">逾期数量</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 热门图书 -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">热门图书 Top 10</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for book in popular_books %}
+                    <a href="{% url 'books:book_detail' book.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-primary me-2">{{ forloop.counter }}</span>
+                            {{ book.title }}
+                        </div>
+                        <span class="badge bg-secondary rounded-pill">{{ book.borrow_count }} 次</span>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-muted">暂无数据</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 热门分类 -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">热门分类 Top 10</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for category in popular_categories %}
+                    <a href="{% url 'books:category_detail' category.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-success me-2">{{ forloop.counter }}</span>
+                            {{ category.name }}
+                        </div>
+                        <span class="badge bg-secondary rounded-pill">{{ category.book_count }} 本</span>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-muted">暂无数据</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 最近借阅 -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">最近借阅记录</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>用户</th>
+                        <th>图书</th>
+                        <th>借阅日期</th>
+                        <th>应还日期</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in recent_borrows %}
+                    <tr>
+                        <td>{{ record.user.username }}</td>
+                        <td><a href="{% url 'books:book_detail' record.book.pk %}">{{ record.book.title }}</a></td>
+                        <td>{{ record.borrow_date|date:"Y-m-d" }}</td>
+                        <td>{{ record.due_date|date:"Y-m-d" }}</td>
+                        <td>
+                            <span class="badge bg-{% if record.status == 'borrowed' %}primary{% elif record.status == 'returned' %}success{% else %}danger{% endif %}">
+                                {{ record.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">暂无借阅记录</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

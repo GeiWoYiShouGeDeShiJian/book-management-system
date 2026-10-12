@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger small">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.isbn.label_tag }}
+                            {{ form.isbn }}
+                            {% if form.isbn.errors %}
+                            <div class="text-danger small">{{ form.isbn.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.publisher.label_tag }}
+                            {{ form.publisher }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.author.label_tag }}
+                            {{ form.author }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.category.label_tag }}
+                            {{ form.category }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.publication_date.label_tag }}
+                            {{ form.publication_date }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.total_copies.label_tag }}
+                            {{ form.total_copies }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.cover_image.label_tag }}
+                        {{ form.cover_image }}
+                        {% if book and book.cover_image %}
+                        <div class="mt-2">
+                            <img src="{{ book.cover_image.url }}" alt="当前封面" style="max-height: 150px;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                        <a href="{% url 'books:book_list' %}" class="btn btn-outline-secondary">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

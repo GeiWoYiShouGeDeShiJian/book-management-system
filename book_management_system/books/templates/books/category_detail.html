@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - 图书管理系统{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'books:home' %}">首页</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'books:category_list' %}">分类</a></li>
+        <li class="breadcrumb-item active">{{ category.name }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>{{ category.name }}</h2>
+        <p class="text-muted">{{ category.description|default:"暂无描述" }}</p>
+    </div>
+    {% if user.is_staff %}
+    <div>
+        <a href="{% url 'books:category_update' category.pk %}" class="btn btn-outline-secondary">编辑分类</a>
+        <a href="{% url 'books:category_delete' category.pk %}" class="btn btn-outline-danger">删除分类</a>
+    </div>
+    {% endif %}
+</div>
+
+<h4 class="mb-3">该分类下的图书</h4>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    {% for book in page_obj %}
+    <div class="col">
+        <div class="card book-card h-100">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="card-img-top book-cover" alt="{{ book.title }}">
+            {% else %}
+            <div class="card-img-top book-cover bg-light d-flex align-items-center justify-content-center">
+                <span class="text-muted">无封面</span>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title text-truncate">{{ book.title }}</h5>
+                <p class="card-text text-muted">
+                    {% if book.author %}{{ book.author.name }}{% else %}未知作者{% endif %}
+                </p>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">该分类下暂无图书</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 分页 -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

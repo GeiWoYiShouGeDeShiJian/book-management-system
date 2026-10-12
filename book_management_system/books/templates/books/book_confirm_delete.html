@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}删除图书 - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">确认删除</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">您确定要删除图书《{{ book.title }}》吗？</p>
+                <p class="text-muted">此操作不可撤销，删除后所有相关数据将被永久删除。</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">确认删除</button>
+                        <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-outline-secondary">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}预约图书 - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">预约图书</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>《{{ book.title }}》</h5>
+                    <p class="text-muted">
+                        作者: {% if book.author %}{{ book.author.name }}{% else %}未知{% endif %}<br>
+                        当前状态: {{ book.get_status_display }}
+                    </p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>该图书当前已全部借出。</strong><br>
+                    预约后，当图书归还时我们会优先通知您。
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        {{ form.notes.label_tag }}
+                        {{ form.notes }}
+                        <div class="form-text">可选，添加预约备注</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">确认预约</button>
+                        <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-outline-secondary">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

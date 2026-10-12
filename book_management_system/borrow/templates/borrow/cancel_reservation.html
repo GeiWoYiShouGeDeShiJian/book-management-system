@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}取消预约 - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0">取消预约</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">您确定要取消预约《{{ reservation.book.title }}》吗？</p>
+                <p class="text-muted">取消后，您需要重新预约才能优先借阅该图书。</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning">确认取消</button>
+                        <a href="{% url 'borrow:reservation_list' %}" class="btn btn-outline-secondary">返回</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

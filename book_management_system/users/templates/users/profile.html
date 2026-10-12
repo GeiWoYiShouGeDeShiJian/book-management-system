@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}个人资料 - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">个人资料</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <h5 class="mb-3">基本信息</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ user_form.username.label_tag }}
+                            {{ user_form.username }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ user_form.first_name.label_tag }}
+                            {{ user_form.first_name }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ user_form.email.label_tag }}
+                        {{ user_form.email }}
+                    </div>
+
+                    <hr class="my-4">
+                    <h5 class="mb-3">详细资料</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ profile_form.phone.label_tag }}
+                            {{ profile_form.phone }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ profile_form.address.label_tag }}
+                            {{ profile_form.address }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ profile_form.bio.label_tag }}
+                        {{ profile_form.bio }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ profile_form.avatar.label_tag }}
+                        {{ profile_form.avatar }}
+                        {% if user.userprofile.avatar %}
+                        <div class="mt-2">
+                            <img src="{{ user.userprofile.avatar.url }}" alt="当前头像" style="max-height: 100px;" class="rounded">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">保存修改</button>
+                        <a href="{% url 'books:home' %}" class="btn btn-outline-secondary">返回首页</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

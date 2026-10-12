@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}图书管理系统{% endblock %}</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .book-card {
+            transition: transform 0.2s;
+            height: 100%;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .book-cover {
+            height: 200px;
+            object-fit: cover;
+        }
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            background-color: #f8f9fa;
+        }
+        .stat-card {
+            border-left: 4px solid #007bff;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'books:home' %}">
+                <i class="bi bi-book"></i> 图书管理系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'books:home' %}">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'books:book_list' %}">图书列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'books:category_list' %}">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'books:author_list' %}">作者</a>
+                    </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            管理
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'books:book_create' %}">添加图书</a></li>
+                            <li><a class="dropdown-item" href="{% url 'books:category_create' %}">添加分类</a></li>
+                            <li><a class="dropdown-item" href="{% url 'books:author_create' %}">添加作者</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'books:statistics' %}">统计分析</a></li>
+                            <li><a class="dropdown-item" href="{% url 'borrow:borrow_record_list' %}">借阅记录</a></li>
+                            <li><a class="dropdown-item" href="{% url 'borrow:overdue_list' %}">逾期管理</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            {{ user.first_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'users:profile' %}">个人资料</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:borrow_history' %}">借阅历史</a></li>
+                            <li><a class="dropdown-item" href="{% url 'borrow:reservation_list' %}">我的预约</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'users:logout' %}">退出登录</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:login' %}">登录</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:register' %}">注册</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 消息提示 -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="container mt-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="text-muted mb-0">&copy; 2024 图书管理系统. 基于Django开发.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

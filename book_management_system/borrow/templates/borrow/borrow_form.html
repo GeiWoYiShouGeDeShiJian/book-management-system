@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}借阅图书 - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">借阅图书</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>《{{ book.title }}》</h5>
+                    <p class="text-muted">
+                        作者: {% if book.author %}{{ book.author.name }}{% else %}未知{% endif %}<br>
+                        可用册数: {{ book.available_copies }} / {{ book.total_copies }}
+                    </p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        {{ form.notes.label_tag }}
+                        {{ form.notes }}
+                        <div class="form-text">可选，添加借阅备注</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>借阅须知：</strong><br>
+                        - 借阅期限为30天<br>
+                        - 每本图书最多可续借2次<br>
+                        - 逾期归还将影响您的借阅权限
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">确认借阅</button>
+                        <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-outline-secondary">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}借阅历史 - 图书管理系统{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">我的借阅历史</h2>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>图书</th>
+                        <th>借阅日期</th>
+                        <th>应还日期</th>
+                        <th>归还日期</th>
+                        <th>状态</th>
+                        <th>续借次数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in borrow_records %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'books:book_detail' record.book.pk %}">{{ record.book.title }}</a>
+                        </td>
+                        <td>{{ record.borrow_date|date:"Y-m-d" }}</td>
+                        <td>
+                            {% if record.is_overdue %}
+                            <span class="text-danger">{{ record.due_date|date:"Y-m-d" }} (已逾期)</span>
+                            {% else %}
+                            {{ record.due_date|date:"Y-m-d" }}
+                            {% endif %}
+                        </td>
+                        <td>{{ record.return_date|date:"Y-m-d"|default:"-" }}</td>
+                        <td>
+                            <span class="badge bg-{% if record.status == 'borrowed' %}primary{% elif record.status == 'returned' %}success{% else %}danger{% endif %}">
+                                {{ record.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ record.renewal_count }} / 2</td>
+                        <td>
+                            {% if record.status == 'borrowed' %}
+                            <a href="{% url 'borrow:return_book' record.pk %}" class="btn btn-warning btn-sm">归还</a>
+                                {% if record.can_renew %}
+                            <a href="{% url 'borrow:renew_book' record.pk %}" class="btn btn-info btn-sm">续借</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <p class="mb-0">暂无借阅记录</p>
+                            <a href="{% url 'books:book_list' %}" class="btn btn-primary btn-sm mt-2">去借书</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

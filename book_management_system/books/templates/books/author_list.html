@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}作者列表 - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>作者列表</h2>
+    {% if user.is_staff %}
+    <a href="{% url 'books:author_create' %}" class="btn btn-success">添加作者</a>
+    {% endif %}
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for author in authors %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ author.name }}</h5>
+                <p class="card-text text-muted">
+                    {{ author.biography|truncatewords:20|default:"暂无简介" }}
+                </p>
+                <p class="card-text">
+                    <span class="badge bg-primary">{{ author.book_count }} 本图书</span>
+                </p>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'books:author_detail' author.pk %}" class="btn btn-outline-primary btn-sm">查看详情</a>
+                {% if user.is_staff %}
+                <a href="{% url 'books:author_update' author.pk %}" class="btn btn-outline-secondary btn-sm">编辑</a>
+                <a href="{% url 'books:author_delete' author.pk %}" class="btn btn-outline-danger btn-sm">删除</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">暂无作者数据</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

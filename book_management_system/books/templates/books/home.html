@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}首页 - 图书管理系统{% endblock %}
+
+{% block content %}
+<!-- 欢迎横幅 -->
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">欢迎来到图书管理系统</h1>
+        <p class="col-md-8 fs-4">探索丰富的图书资源，管理您的借阅记录，享受便捷的在线图书服务。</p>
+        <a href="{% url 'books:book_list' %}" class="btn btn-primary btn-lg">浏览图书</a>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-muted">图书总数</h6>
+                        <h3 class="card-title">{{ total_books }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-book" style="font-size: 2rem; color: #007bff;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card" style="border-left-color: #28a745;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-muted">分类数量</h6>
+                        <h3 class="card-title">{{ total_categories }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-tags" style="font-size: 2rem; color: #28a745;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card" style="border-left-color: #ffc107;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-muted">作者数量</h6>
+                        <h3 class="card-title">{{ total_authors }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person" style="font-size: 2rem; color: #ffc107;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 热门图书 -->
+<h2 class="mb-4">热门图书</h2>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4 mb-5">
+    {% for book in popular_books %}
+    <div class="col">
+        <div class="card book-card h-100">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="card-img-top book-cover" alt="{{ book.title }}">
+            {% else %}
+            <div class="card-img-top book-cover bg-light d-flex align-items-center justify-content-center">
+                <span class="text-muted">无封面</span>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title text-truncate">{{ book.title }}</h5>
+                <p class="card-text text-muted small">
+                    {% if book.author %}{{ book.author.name }}{% else %}未知作者{% endif %}
+                </p>
+                <p class="card-text">
+                    <small class="text-muted">借阅次数: {{ book.borrow_count }}</small>
+                </p>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-muted">暂无热门图书数据</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 最新图书 -->
+<h2 class="mb-4">最新上架</h2>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for book in recent_books %}
+    <div class="col">
+        <div class="card book-card h-100">
+            <div class="row g-0">
+                <div class="col-4">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="h-100 bg-light d-flex align-items-center justify-content-center">
+                        <span class="text-muted small">无封面</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-8">
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">{{ book.title }}</h5>
+                        <p class="card-text text-muted small">
+                            {% if book.author %}{{ book.author.name }}{% else %}未知作者{% endif %}
+                        </p>
+                        <p class="card-text">
+                            <span class="badge bg-{% if book.status == 'available' %}success{% else %}warning{% endif %}">
+                                {{ book.get_status_display }}
+                            </span>
+                        </p>
+                        <a href="{% url 'books:book_detail' book.pk %}" class="btn btn-outline-primary btn-sm">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-muted">暂无图书数据</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

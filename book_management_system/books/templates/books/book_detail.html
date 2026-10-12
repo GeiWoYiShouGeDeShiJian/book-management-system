@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} - 图书管理系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 图书封面 -->
+    <div class="col-md-4">
+        <div class="card">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                <span class="text-muted">暂无封面</span>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if user.is_authenticated %}
+                        {% if user_borrow_record %}
+                        <a href="{% url 'borrow:return_book' user_borrow_record.pk %}" class="btn btn-warning">归还图书</a>
+                            {% if user_borrow_record.can_renew %}
+                        <a href="{% url 'borrow:renew_book' user_borrow_record.pk %}" class="btn btn-info">续借图书</a>
+                            {% endif %}
+                        {% elif book.is_available %}
+                        <a href="{% url 'borrow:borrow_book' book.pk %}" class="btn btn-primary">借阅图书</a>
+                        {% else %}
+                        <a href="{% url 'borrow:reserve_book' book.pk %}" class="btn btn-outline-primary">预约图书</a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{% url 'users:login' %}" class="btn btn-primary">登录后借阅</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图书详情 -->
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'books:home' %}">首页</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'books:book_list' %}">图书列表</a></li>
+                <li class="breadcrumb-item active">{{ book.title }}</li>
+            </ol>
+        </nav>
+
+        <h1 class="mb-3">{{ book.title }}</h1>
+
+        <div class="mb-3">
+            <span class="badge bg-{% if book.status == 'available' %}success{% else %}warning{% endif %} fs-6">
+                {{ book.get_status_display }}
+            </span>
+            {% if book.category %}
+            <a href="{% url 'books:category_detail' book.category.pk %}" class="badge bg-info fs-6 text-decoration-none">
+                {{ book.category.name }}
+            </a>
+            {% endif %}
+        </div>
+
+        <table class="table table-borderless">
+            <tbody>
+                <tr>
+                    <th style="width: 120px;">作者</th>
+                    <td>
+                        {% if book.author %}
+                        <a href="{% url 'books:author_detail' book.author.pk %}">{{ book.author.name }}</a>
+                        {% else %}未知{% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>ISBN</th>
+                    <td>{{ book.isbn|default:"暂无" }}</td>
+                </tr>
+                <tr>
+                    <th>出版社</th>
+                    <td>{{ book.publisher|default:"暂无" }}</td>
+                </tr>
+                <tr>
+                    <th>出版日期</th>
+                    <td>{{ book.publication_date|default:"暂无" }}</td>
+                </tr>
+                <tr>
+                    <th>库存</th>
+                    <td>
+                        <span class="{% if book.available_copies > 0 %}text-success{% else %}text-danger{% endif %}">
+                            {{ book.available_copies }} / {{ book.total_copies }} 本
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>借阅次数</th>
+                    <td>{{ borrow_count }} 次</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h5>图书简介</h5>
+        <p class="text-muted">
+            {{ book.description|default:"暂无简介"|linebreaks }}
+        </p>
+
+        {% if user.is_staff %}
+        <div class="mt-4">
+            <h5>管理操作</h5>
+            <div class="btn-group">
+                <a href="{% url 'books:book_update' book.pk %}" class="btn btn-outline-primary">编辑图书</a>
+                <a href="{% url 'books:book_delete' book.pk %}" class="btn btn-outline-danger">删除图书</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
